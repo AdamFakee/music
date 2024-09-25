@@ -1,0 +1,28 @@
+header.header
+    .container 
+        .inner-wrap 
+            a(href="#" class='inner-logo') 
+                <i class="fa-brands fa-spotify"></i>
+            .inner-middle 
+                a(href="#" class='inner-home') 
+                    <i class="fa-solid fa-house"></i>
+                form(
+                    action='/search/result'
+                    class='inner-form'
+                    form-search
+                    )
+                    input(
+                        type="text" 
+                        placeholder='bạn muốn phát nội dung gì?'
+                        name='keyword'
+                        )
+                    button 
+                        <i class="fa-solid fa-magnifying-glass"></i>
+            .inner-personal 
+                .inner-notice 
+                    <i class="fa-regular fa-comment"></i>
+                a(href="#" class='inner-avatar')  
+                    img(src='/client/img/avatar.jpg' alt="")
+
+
+                

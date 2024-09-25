@@ -1,0 +1,26 @@
+extends ../../layout/default.pug
+
+block main 
+    .search 
+        .container
+            .inner-wrap 
+                .inner-result 
+                    .inner-left 
+                        .inner-title Kết quả hàng đầu
+                        .inner-content 
+                            img(src="/client/img/avatar.jpg", alt="")
+                            .inner-info 
+                                .inner-name Son tung 
+                                .inner-desc Nghe si 
+                    .inner-right 
+                        .inner-title Bài hát  
+                        div(class='inner-list' search-suguest) 
+                            each item in song
+                                .inner-song
+                                    .inner-info
+                                        img(src=item.avatar, alt="")
+                                        .inner-content 
+                                            a(href=`/song/${item.id}`).inner-name #{item.title}
+                                            .inner-singer 
+                                                a(href="") #{item.singer}
+                                    .inner-time 5:34

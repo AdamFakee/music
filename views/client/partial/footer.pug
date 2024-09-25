@@ -1,0 +1,28 @@
+footer.footer 
+    .container 
+        .inner-wrap 
+            .inner-desc 
+                img(src="/client/img/avatar.jpg", alt="")
+                .inner-content 
+                    .inner-name Hà Nội
+                    .inner-singer 
+                        ul  
+                            li 
+                                a(href="") obito
+                button(class='inner-add-favorite') <i class="fa-solid fa-plus"></i>
+            .inner-play 
+                .inner-control 
+                    button <i class="fa-brands fa-mixer" random-song></i>
+                    button <i class="fa-solid fa-backward-step" previous-audio></i>
+                    button.play <i class="fa-solid fa-play" play-audio></i>
+                    button <i class="fa-solid fa-forward-step" next-audio></i>
+                    button <i class="fa-solid fa-rotate" loop-audio></i>
+                .inner-audio 
+                    audio(src="https://backend.daca.vn/assets/audios/cat-doi-noi-sau.mp3" audio id='audio')
+                    div(class='inner-progress-bar' progress-bar) 
+                        div(class='inner-time-start' time-start) 0:00
+                        div(class='inner-bar' time-line) 
+                            div(class='inner-fill' time-filled) 
+                        div(class='inner-time-end' time-end)  5:00
+            .inner-feature 
+                button.inner-lyric <i class="fa-solid fa-bars-staggered"></i>

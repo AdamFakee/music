@@ -37,8 +37,39 @@ export const random = async (req: Request, res: Response) => {
     });
 }
 
-// [GET] /song/previous-audio
+// [GET] /song/previous-audio/:type
 export const previousAudio = async (req: Request, res: Response) => {
+    const type = req.params.type; 
+    // check router
+    if(type != 'nomal' && type !='queue') {
+        res.json({
+            code : 400
+        });
+        return;
+    }
+    // End check router
+
+    if(type == 'queue') {
+        const songId = `${req.query.songId}`;
+        const preSong = await Song.findOne({
+            where : {
+                id : songId
+            },
+            raw : true
+        })
+        if(preSong) {
+            res.json({
+                code : 200,
+                song : preSong,
+            });
+            return;
+        } else {
+            res.json({
+                code : 400
+            });
+            return;
+        }
+    }
     const audioCurrentId = `${req.query.audioCurrentId}`;
     const idPreAudio = await sequelize.query(`  
         SELECT MAX(id) as id
@@ -79,6 +110,37 @@ export const previousAudio = async (req: Request, res: Response) => {
 
 // [GET] /song/next-audio
 export const nextAudio = async (req: Request, res: Response) => {
+    const type = req.params.type; 
+    // check router
+    if(type != 'nomal' && type !='queue') {
+        res.json({
+            code : 400
+        });
+        return;
+    }
+    // End check router
+
+    if(type == 'queue') {
+        const songId = `${req.query.songId}`;
+        const preSong = await Song.findOne({
+            where : {
+                id : songId
+            },
+            raw : true
+        })
+        if(preSong) {
+            res.json({
+                code : 200,
+                song : preSong,
+            });
+            return;
+        } else {
+            res.json({
+                code : 400
+            });
+            return;
+        }
+    }
     const audioCurrentId = `${req.query.audioCurrentId}`;
     const idNextAudio = await sequelize.query(
         `SELECT MIN(id) as id, audio

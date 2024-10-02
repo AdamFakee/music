@@ -49,6 +49,29 @@ if(formSearch) {
 // end sugguest search
 
 
+// add-to-queue
+let songInQueue = []; // hàng đợi ưu tiên chứa các bài hát được chọn : FIFO
+const addToQueue = document.querySelectorAll('[add-to-queue]');
+if(addToQueue.length) {
+  addToQueue.forEach(song => {
+    song.addEventListener('click', () => {
+      const songId = song.getAttribute('add-to-queue');
+
+      // songId đã tồn tại => click => đẩy nó ra sau cùng
+      if(songInQueue.includes(songId)) { 
+        const index = songInQueue.indexOf(songId);
+        if (index > -1) { 
+          songInQueue.splice(index, 1); // xóa songId tại vị trí cũ
+          songInQueue.push(songId);
+        }
+      } else {
+        songInQueue.push(songId);
+      }
+    })
+  })
+}
+// End add-to-queue
+
 // audio
 const audio = document.querySelector('[audio]');
 const progressBar = document.querySelector('[progress-bar]');
@@ -154,23 +177,44 @@ if(randomSong) {
 const previousAudio = document.querySelector('[previous-audio]');
 if(previousAudio && audio) {
   previousAudio.addEventListener('click', () => {
-    const audioCurrentId = audio.getAttribute('audio-id');  // id của audio hiện tại
-    fetch(`/song/previous-audio?audioCurrentId=${audioCurrentId}`)
-      .then (res => res.json())
-      .then (data => {
-        if(data.code == 200) {
-          audio.src = data.song.audio;
-          console.log(data.song.id)
-          audio.setAttribute('audio-id', data.song.id);
-          setTimeout(() => {
-            const timeEnd = document.querySelector('[time-end]');
-            const durationTime = Math.round(audio.duration);
-            timeEnd.innerHTML = formatTime(durationTime);
-          }, 500);
-          const timeFilled = progressBar.querySelector('[time-filled]');
-          timeFilled.style.width = '0%';
-        }
-      })
+    if(songInQueue.length) {
+      const songId = songInQueue.shift();
+      fetch(`/song/previous-audio/queue?songId=${songId}`)
+        .then (res => res.json())
+        .then (data => {
+          if(data.code == 200) {
+            console.log(data)
+            audio.src = data.song.audio;
+            console.log(data.song.id)
+            audio.setAttribute('audio-id', data.song.id);
+            setTimeout(() => {
+              const timeEnd = document.querySelector('[time-end]');
+              const durationTime = Math.round(audio.duration);
+              timeEnd.innerHTML = formatTime(durationTime);
+            }, 500);
+            const timeFilled = progressBar.querySelector('[time-filled]');
+            timeFilled.style.width = '0%';
+          }
+        })
+    } else {
+      const audioCurrentId = audio.getAttribute('audio-id');  // id của audio hiện tại
+      fetch(`/song/previous-audio/nomal?audioCurrentId=${audioCurrentId}`)
+        .then (res => res.json())
+        .then (data => {
+          if(data.code == 200) {
+            audio.src = data.song.audio;
+            console.log(data.song.id)
+            audio.setAttribute('audio-id', data.song.id);
+            setTimeout(() => {
+              const timeEnd = document.querySelector('[time-end]');
+              const durationTime = Math.round(audio.duration);
+              timeEnd.innerHTML = formatTime(durationTime);
+            }, 500);
+            const timeFilled = progressBar.querySelector('[time-filled]');
+            timeFilled.style.width = '0%';
+          }
+        })
+      }
   })
 }
 // End previous-audio
@@ -179,22 +223,42 @@ if(previousAudio && audio) {
 const nextAudio = document.querySelector('[next-audio]');
 if(nextAudio && audio) {
   nextAudio.addEventListener('click', () => {
-    const audioCurrentId = audio.getAttribute('audio-id'); // id của audio hiện tại
-    fetch(`/song/next-audio?audioCurrentId=${audioCurrentId}`)
-      .then (res => res.json())
-      .then (data => {
-        if(data.code == 200) {
-          audio.src = data.song.audio;
-          audio.setAttribute('audio-id', data.song.id);
-          setTimeout(() => {
-            const timeEnd = document.querySelector('[time-end]');
-            const durationTime = Math.round(audio.duration);
-            timeEnd.innerHTML = formatTime(durationTime);
-          }, 500);
-          const timeFilled = progressBar.querySelector('[time-filled]'); 
-          timeFilled.style.width = '0%';  // set lại width cho thanh progressBar
-        }
-      })
+    if(songInQueue.length) {
+      const songId = songInQueue.shift();
+      const audioCurrentId = audio.getAttribute('audio-id'); // id của audio hiện tại
+      fetch(`/song/next-audio/queue?songId=${songId}`)
+        .then (res => res.json())
+        .then (data => {
+          if(data.code == 200) {
+            audio.src = data.song.audio;
+            audio.setAttribute('audio-id', data.song.id);
+            setTimeout(() => {
+              const timeEnd = document.querySelector('[time-end]');
+              const durationTime = Math.round(audio.duration);
+              timeEnd.innerHTML = formatTime(durationTime);
+            }, 500);
+            const timeFilled = progressBar.querySelector('[time-filled]'); 
+            timeFilled.style.width = '0%';  // set lại width cho thanh progressBar
+          }
+        })
+    } else {
+      const audioCurrentId = audio.getAttribute('audio-id'); // id của audio hiện tại
+      fetch(`/song/next-audio/nomal?audioCurrentId=${audioCurrentId}`)
+        .then (res => res.json())
+        .then (data => {
+          if(data.code == 200) {
+            audio.src = data.song.audio;
+            audio.setAttribute('audio-id', data.song.id);
+            setTimeout(() => {
+              const timeEnd = document.querySelector('[time-end]');
+              const durationTime = Math.round(audio.duration);
+              timeEnd.innerHTML = formatTime(durationTime);
+            }, 500);
+            const timeFilled = progressBar.querySelector('[time-filled]'); 
+            timeFilled.style.width = '0%';  // set lại width cho thanh progressBar
+          }
+        })
+    }
   })
 }
 // End previous-audio
@@ -226,5 +290,7 @@ if(timeLine && audio) {
 }
 
 // End time-filled : move special time
+
+
 
 

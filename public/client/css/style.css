@@ -515,6 +515,8 @@ a {
     border-radius: 10px;
     gap: 7px;
     height: 50px;
+    align-items: center;
+    padding-right: 10px;
 }
 .section-1 .inner-wrap .inner-song img {
     height: 100%;

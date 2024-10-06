@@ -364,6 +364,7 @@ a {
 .footer .inner-wrap .inner-feature {
     text-align: right;
     width: 30%;
+    position: relative;
 }
 .footer .inner-wrap .inner-feature .inner-lyric {
     background-color: transparent;
@@ -372,6 +373,36 @@ a {
 .footer .inner-wrap .inner-feature .inner-lyric i {
     color: #FDFDFD;
     font-size: 20px;
+}
+.footer .inner-wrap .inner-feature .inner-queue {
+    display: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border: 1px #121212 solid;
+    background-color: #121212;
+    max-height: 300px;
+    min-height: 200px;
+    max-width: 200px;
+    min-width: 130px;
+    border-radius: 40px;
+    border-radius: 10px;
+    padding: 8px;
+    gap: 10px;
+    flex-wrap: wrap;
+    overflow-y: auto;
+    position: absolute;
+    bottom: 29px;
+    right: 0px;
+    z-index: 5;
+} 
+.footer .inner-wrap .inner-feature .show {
+    display: flex;
+}
+.footer .inner-wrap .inner-feature .inner-queue .inner-item {
+    font-size: 14px;
+    font-weight: 400;
+    color: #949394;
 }
 /* End footer */
 

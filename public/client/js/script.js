@@ -291,6 +291,16 @@ if(timeLine && audio) {
 
 // End time-filled : move special time
 
-
+// button-queue : show queue
+const buttonQueue = document.querySelector('[button-queue]');
+if(buttonQueue) {
+  buttonQueue.addEventListener('click', () => {
+    const queue = document.querySelector('[queue]');
+    if(queue) {
+      queue.classList.toggle('show');
+    }
+  })
+}
+// End button-queue
 
 

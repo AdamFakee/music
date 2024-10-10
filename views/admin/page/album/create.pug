@@ -1,0 +1,52 @@
+extends ../../layout/default.pug
+
+block main
+
+    form(
+        action=`/${prefixAdmin}/album/create`
+        method="POST"
+        enctype="multipart/form-data"
+    )
+        div(class="form-group")
+            label(for="name") Tiêu đề
+            input(
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                required
+            )
+        div(
+            class="form-group"
+            upload-image
+        )
+            label(for="imgs") Ảnh
+            input(
+                type="file"
+                class="form-control-file"
+                id="imgs"
+                name="imgs"
+                accept="image/*"
+                multiple 
+                upload-image-input
+            )
+            img(
+                src=""
+                class="image-preview"
+                upload-image-preview
+            )
+        div(class="form-group")
+            label(for="information") Mô tả
+            textarea(
+                type="text"
+                class="form-control"
+                id="information"
+                name="information"
+                rows="5"
+                textarea-mce
+            )
+        div(class="form-group")
+            button(
+                type="submit"
+                class="btn btn-primary"
+            ) Tạo mới

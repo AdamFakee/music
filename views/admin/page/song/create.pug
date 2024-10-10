@@ -1,4 +1,5 @@
 extends ../../layout/default.pug
+include ../../mixin/selectDrop.pug
 
 block main
     h1(class="mb-4") #{pageTitle}
@@ -9,47 +10,28 @@ block main
         enctype="multipart/form-data"
     )
         div(class="form-group")
-            label(for="title") Tiêu đề
+            label(for="name") Tiêu đề
             input(
-                type="text"
+                type="name"
                 class="form-control"
-                id="title"
-                name="title"
+                id="name"
+                name="name"
                 required
             )
-        div(class="form-group")
-            label(for="topic") Chủ đề
-            select(
-                name="topic"
-                id="topic"
-                class="form-control"
-                required
-            )
-                option(value="" disabled selected) -- Chọn chủ đề --
-                option(value="young_music") nhạc trẻ
-                option(value="classic_music") nhạc cổ điển  
-        div(class="form-group")
-            label(for="singer") Ca sĩ
-            select(
-                name="singer"
-                id="singer"
-                class="form-control"
-                required
-            )
-                option(value="" disabled selected) -- Chọn ca sĩ --
-                option(value="tuan") tuấn
-                option(value="tot")  tọt
+        +selectDrop('albumId', 'album', albums)
+        +selectDrop('singerId', 'singer', singers)
         div(
             class="form-group"
             upload-image
         )
-            label(for="avatar") Ảnh
+            label(for="imgs") Ảnh
             input(
                 type="file"
                 class="form-control-file"
-                id="avatar"
-                name="avatar"
+                id="imgs"
+                name="imgs"
                 accept="image/*"
+                multiple
                 upload-image-input
             )
             img(
@@ -73,12 +55,12 @@ block main
             audio(controls upload-audio-play)
                 source(src="")
         div(class="form-group")
-            label(for="desc") Mô tả
+            label(for="information") Mô tả
             textarea(
                 type="text"
                 class="form-control"
-                id="desc"
-                name="description"
+                id="information"
+                name="information"
                 rows="5"
                 textarea-mce
             )

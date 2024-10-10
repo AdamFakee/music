@@ -22,10 +22,11 @@ export const uploadField = async (
 ): Promise<void> => {
   if(req['files']) {
     for (const key in req["files"]) {
-      let link;
+      let link = [];
       for (const item of req["files"][key]) {
         try {
-          link = await uploadCloudinary(item.buffer);
+          const url = await uploadCloudinary(item.buffer);
+          link.push(url)
         } catch (error) {
           console.log(error);
         }

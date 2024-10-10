@@ -4,7 +4,7 @@ import { Router } from "express";
 import multer from 'multer';
 
 const upload = multer();
-const cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'audio', maxCount: 1 }])
+const cpUpload = upload.fields([{ name: 'imgs', maxCount: 6 }, { name: 'audio', maxCount: 1 }])
 
 const router: Router = Router();
 

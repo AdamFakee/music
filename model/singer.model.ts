@@ -2,7 +2,7 @@ import sequelize from '../config/database';
 import {DataTypes} from 'sequelize';
 import SequelizeSlugify from 'sequelize-slugify';
 
-const songSchema = sequelize.define('song', {
+const singerSchema = sequelize.define('singer', {
     id : {
         type : DataTypes.INTEGER,
         autoIncrement : true,
@@ -14,29 +14,36 @@ const songSchema = sequelize.define('song', {
         allowNull : false,
     },
     information : DataTypes.TEXT('long'),
-    imgs : DataTypes.TEXT('long'),
-    audio : DataTypes.TEXT('long'),
-    lyric : DataTypes.TEXT('long'),
+    img : DataTypes.TEXT('long'),
+    email : {
+        type : DataTypes.STRING(50),
+        allowNull : false,
+        unique : true
+    },
+    sdt : {
+        type : DataTypes.CHAR(10),
+        unique : true,
+    },
     slug: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(250),
         unique: true
     },
     status : {
-        type : DataTypes.STRING,
+        type : DataTypes.STRING(30),
         defaultValue: true
     },
     deleted : {
-        type : DataTypes.STRING,
+        type : DataTypes.STRING(30),
         defaultValue : false,
     }
 },  { 
     timestamps : true,
-    tableName : 'songs'
+    tableName : 'singers'
 })
 
-SequelizeSlugify.slugifyModel(songSchema, {
+SequelizeSlugify.slugifyModel(singerSchema, {
     source: ['name']
 });
 
 
-export const Song = songSchema;
+export const Singer = singerSchema;

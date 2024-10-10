@@ -1,4 +1,5 @@
 extends ../../layout/default.pug
+include ../../mixin/selectDrop.pug
 
 block main
     h1(class="mb-4") #{pageTitle}
@@ -9,53 +10,33 @@ block main
         enctype="multipart/form-data"
     )
         div(class="form-group")
-            label(for="title") Tiêu đề
+            label(for="name") Tiêu đề
             input(
                 type="text"
                 class="form-control"
-                id="title"
-                name="title"
+                id="name"
+                name="name"
                 required
-                value=song.title
+                value=song.name
             )
-        div(class="form-group")
-            label(for="topic") Chủ đề
-            select(
-                name="topicId"
-                id="topic"
-                class="form-control"
-                required
-            )
-                option(value="" disabled) -- Chọn chủ đề --
-                option(value="young_music" selected=(song.topic == 'young_music' ? true : false)) nhạc trẻ
-                option(value="classic_music" selected=(song.topic == 'classic_music' ? true : false)) nhạc cổ điển 
-        div(class="form-group")
-            label(for="singer") Ca sĩ
-            select(
-                name="singerId"
-                id="singer"
-                class="form-control"
-                required
-            )
-                option(value="" disabled selected) -- Chọn ca sĩ --
-                option(value="tuan" selected=(song.singer == 'tuan' ? true : false)) tuấn
-                option(value="tot" selected=(song.singer == 'tot' ? true : false))  tọt
+        +selectDropEdit('albumId', 'album', albums, albumSingerSongs.albumId)
+        +selectDropEdit('singerId', 'singer', singers, albumSingerSongs.singerId)
         div(
             class="form-group"
             upload-image
         )
-            label(for="avatar") Ảnh
+            label(for="imgs") Ảnh
             input(
                 type="file"
                 class="form-control-file"
-                id="avatar"
-                name="avatar"
+                id="imgs"
+                name="imgs"
                 accept="image/*"
+                multiple
                 upload-image-input
-                value=song.avatar
             )
             img(
-                src=song.avatar
+                src=song.imgs[0]
                 class="image-preview"
                 upload-image-preview
             )
@@ -85,7 +66,7 @@ block main
                 rows="5"
                 value=song.desc
                 textarea-mce
-            ) #{song.description}
+            ) #{song.information}
         div(class="form-group")
             label(for="lyric") Lời bài hát
             textarea(

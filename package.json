@@ -19,6 +19,7 @@
     "mysql2": "^3.11.2",
     "pug": "^3.0.3",
     "sequelize": "^6.37.3",
+    "sequelize-slugify": "^1.6.2",
     "slug": "^9.1.0",
     "streamifier": "^0.1.1",
     "unidecode": "^1.1.0"

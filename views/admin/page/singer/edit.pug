@@ -1,0 +1,73 @@
+extends ../../layout/default.pug
+
+block main
+    h1(class="mb-4") #{pageTitle}
+
+    form(
+        action=`/${prefixAdmin}/singer/edit/${singer.id}?_method=PATCH`
+        method="POST"
+        enctype="multipart/form-data"
+    )
+        div(class="form-group")
+            label(for="name") Tên ca sĩ *
+            input(
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                value=singer.name
+                required
+            )
+        div(class="form-group")
+            label(for="email") Email *
+            input(
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                value=singer.email
+                required
+            )
+        div(class="form-group")
+            label(for="sdt") Số điện thoại
+            input(
+                type="number"
+                class="form-control"
+                id="sdt"
+                name="sdt"
+                value=singer.email
+            )
+        div(
+            class="form-group"
+            upload-image
+        )
+            label(for="img") Ảnh
+            input(
+                type="file"
+                class="form-control-file"
+                id="img"
+                name="img"
+                accept="image/*"
+                upload-image-input
+            )
+            img(
+                src=singer.img
+                class="image-preview"
+                upload-image-preview
+            )
+        div(class="form-group")
+            label(for="information") Mô tả
+            textarea(
+                type="text"
+                class="form-control"
+                id="information"
+                name="information"
+                rows="5"
+                value=singer.information
+                textarea-mce
+            )
+        div(class="form-group")
+            button(
+                type="submit"
+                class="btn btn-primary"
+            ) cập nhật

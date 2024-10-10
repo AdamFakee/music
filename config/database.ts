@@ -1,8 +1,10 @@
 import { Sequelize, DataTypes } from 'sequelize';
-
+import dotenv from 'dotenv';
+dotenv.config();
+ 
 const sequelize = new Sequelize(
-    'music', // tên database
-    'root', // username
+    process.env.DATABASE_NAME, // tên database
+    process.env.DATABASE_USER_NAME, // username
     process.env.DATABASE_PASSWORD, // password
     {
       host: process.env.DATABASE_HOST,

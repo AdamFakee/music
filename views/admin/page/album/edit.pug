@@ -3,49 +3,49 @@ extends ../../layout/default.pug
 block main
 
     form(
-        action=`/${prefixAdmin}/topic/edit/${topic.id}?_method=PATCH`
+        action=`/${prefixAdmin}/album/edit/${album.id}?_method=PATCH`
         method="POST"
         enctype="multipart/form-data"
     )
         div(class="form-group")
-            label(for="title") Tiêu đề
+            label(for="name") Tiêu đề
             input(
                 type="text"
                 class="form-control"
-                id="title"
-                name="title"
+                id="name"
+                name="name"
                 required
-                value=topic.title
+                value=album.name
             )
         div(
             class="form-group"
             upload-image
         )
-            label(for="avatar") Ảnh
+            label(for="imgs") Ảnh
             input(
                 type="file"
                 class="form-control-file"
-                id="avatar"
-                name="avatar"
+                id="imgs"
+                name="imgs"
                 accept="image/*"
+                multiple
                 upload-image-input
             )
             img(
-                src=topic.avatar
+                src=album.imgs[0]
                 class="image-preview"
                 upload-image-preview
             )
         div(class="form-group")
-            label(for="desc") Mô tả
+            label(for="information") Mô tả
             textarea(
                 type="text"
                 class="form-control"
-                id="desc"
-                name="description"
+                id="information"
+                name="information"
                 rows="5"
-                value=topic.description
                 textarea-mce
-            )
+            ) #{album.information}
         div(class="form-group form-check form-check-inline")
             input(
                 type="radio"
@@ -53,7 +53,7 @@ block main
                 id="statusActive"
                 name="status"
                 value="active"
-                checked=(topic.status == 'active' ? true : false)
+                checked=(album.status == 'active' ? true : false)
             )
             label(for="statusActive" class="form-check-label") Hoạt động
         div(class="form-group form-check form-check-inline")
@@ -63,11 +63,11 @@ block main
                 id="statusInActive"
                 name="status"
                 value="inactive"
-                checked=(topic.status == 'inactive' ? true : false)
+                checked=(album.status == 'inactive' ? true : false)
             )
             label(for="statusInActive" class="form-check-label") Dừng hoạt động
         div(class="form-group")
             button(
                 type="submit"
                 class="btn btn-primary"
-            ) Tạo mới
+            ) cập nhật

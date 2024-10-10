@@ -2,7 +2,7 @@ import sequelize from '../config/database';
 import {DataTypes} from 'sequelize';
 import SequelizeSlugify from 'sequelize-slugify';
 
-const songSchema = sequelize.define('song', {
+const albumSchema = sequelize.define('album', {
     id : {
         type : DataTypes.INTEGER,
         autoIncrement : true,
@@ -15,15 +15,13 @@ const songSchema = sequelize.define('song', {
     },
     information : DataTypes.TEXT('long'),
     imgs : DataTypes.TEXT('long'),
-    audio : DataTypes.TEXT('long'),
-    lyric : DataTypes.TEXT('long'),
     slug: {
         type: DataTypes.STRING,
         unique: true
     },
     status : {
         type : DataTypes.STRING,
-        defaultValue: true
+        defaultValue: 'active'
     },
     deleted : {
         type : DataTypes.STRING,
@@ -31,12 +29,12 @@ const songSchema = sequelize.define('song', {
     }
 },  { 
     timestamps : true,
-    tableName : 'songs'
+    tableName : 'albums'
 })
 
-SequelizeSlugify.slugifyModel(songSchema, {
+SequelizeSlugify.slugifyModel(albumSchema, {
     source: ['name']
 });
 
 
-export const Song = songSchema;
+export const Album = albumSchema;

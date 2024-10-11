@@ -1,4 +1,3 @@
-import * as RabbitLyrics from "https://unpkg.com/rabbit-lyrics";
 
 
 const formSearch = document.querySelector('[form-search]');
@@ -8,8 +7,9 @@ if(formSearch){
   formSearch.addEventListener('click', () => {
     const url = new URL(window.location.href);
     const searchUrl = url.origin + '/search/result'
+    const currentUrl = url.href.split('?')[0]
 
-    if(url.href != searchUrl){
+    if(currentUrl != searchUrl){
       window.location.href = '/search/result';
     }
   })
@@ -26,14 +26,14 @@ if(formSearch) {
       .then(res => res.json())
       .then(data => {
         if(data.code == 200){
-          const listSong = data.song.map(item => `
+          const listSong = data.songs.map(item => `
             <div class="inner-song">
               <div class="inner-info">
-                <img src=${item.avatar} alt=""/>
+                <img src=${item.avartar} alt=""/>
                 <div class="inner-content"> 
-                  <div class="inner-name">${item.title}</div>
+                  <a href='/song/detail/${item.slug}' class="inner-name">${item.songName}</a>
                   <div class="inner-singer">
-                    <a href="">${item.singer}</a>
+                    <a href='#'>${item.singerName}</a>
                   </div>
                 </div>
               </div>
@@ -248,6 +248,7 @@ if(nextAudio && audio) {
         .then (data => {
           if(data.code == 200) {
             audio.src = data.song.audio;
+            console.log(data.song.id)
             audio.setAttribute('audio-id', data.song.id);
             setTimeout(() => {
               const timeEnd = document.querySelector('[time-end]');

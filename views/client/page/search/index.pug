@@ -15,12 +15,18 @@ block main
                     .inner-right 
                         .inner-title Bài hát  
                         div(class='inner-list' search-suguest) 
-                            each item in song
-                                .inner-song
-                                    .inner-info
-                                        img(src=item.avatar, alt="")
-                                        .inner-content 
-                                            a(href=`/song/${item.id}`).inner-name #{item.title}
-                                            .inner-singer 
-                                                a(href="") #{item.singer}
-                                    .inner-time 5:34
+                            if(songs.length)
+                                each item in songs
+                                    .inner-song
+                                        .inner-info
+                                            if(item.avatar)
+                                                img(src=item.avatar, alt="")
+                                            else 
+                                                img(src='#' alt='chưa có ảnh')
+                                            .inner-content 
+                                                a(href=`/song/detail/${item.slug}`).inner-name #{item.songName}
+                                                .inner-singer 
+                                                    a(href="") #{item.singerName}
+                                        .inner-time 5:34
+                            else 
+                                h3 k tìm thấy

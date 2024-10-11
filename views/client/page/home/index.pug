@@ -4,9 +4,12 @@ block main
     section.section-1 
         .inner-wrap 
             .inner-title  Đề xuất
-            each item in song
+            each item in songs
                 .inner-song 
-                    img(src=item.avatar, alt="")
-                    a(href='#' class='inner-name') #{item.title}
+                    if(item.imgs)
+                        img(src=item.imgs[0])
+                    else 
+                        img(alt='k có ảnh')
+                    a(href=`/song/detail/${item.slug}` class='inner-name') #{item.name}
                     i(class="fa-solid fa-plus" add-to-queue=item.id)
                 

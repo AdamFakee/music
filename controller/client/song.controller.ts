@@ -2,18 +2,25 @@ import { Request, Response } from "express";
 import sequelize from '../../config/database';
 import {Op,QueryTypes} from 'sequelize';
 import {Song} from '../../model/song.model';
-import { raw } from "body-parser";
+import { jsonParseHelper, jsonParseHelperNotInLoop } from "../../helper/jsonParse.helper";
 
 
-// [GET] /song/detail/:id
+// [GET] /song/detail/:slug
 export const detail = async (req: Request, res: Response) => {
-    const id = req.params.id;
+    const slug = req.params.slug;
     const song = await Song.findOne({
         where : {
-            id : id,
+            slug : slug,
+            deleted : false,
+            status : 'active'
         },
         raw : true
     });
+    if(!song) {
+        res.redirect('/');
+        return;
+    }
+    jsonParseHelperNotInLoop(song);
     res.render('client/page/song/detail.pug', {
         song : song,
     })
@@ -31,6 +38,14 @@ export const random = async (req: Request, res: Response) => {
         order : sequelize.random(),
         raw : true
     });
+
+    if(!song) {
+        res.json({
+            code : 400
+        });
+        return;
+    }
+
     res.json({
         code : 200,
         song : song
@@ -49,8 +64,8 @@ export const previousAudio = async (req: Request, res: Response) => {
     }
     // End check router
 
-    if(type == 'queue') {
-        const songId = `${req.query.songId}`;
+    if(type == 'queue') {  // check router cụ thể
+        const songId = `${req.query.songId}`; // id bài trong hàng đợi
         const preSong = await Song.findOne({
             where : {
                 id : songId
@@ -71,39 +86,33 @@ export const previousAudio = async (req: Request, res: Response) => {
         }
     }
     const audioCurrentId = `${req.query.audioCurrentId}`;
-    const idPreAudio = await sequelize.query(`  
-        SELECT MAX(id) as id
-        FROM song
-        WHERE id < ${audioCurrentId};`, {
-        type: QueryTypes.SELECT,
-    });
-    const song = await Song.findOne({ // previous-audio
-        where : {
-            id : idPreAudio[0]['id']
-        },
-        raw : true
-    })
-    if(song) {
+    const song = await sequelize.query(   // bài hát trước đó trong databse
+        `select id, audio from songs
+        where id  < ${audioCurrentId} and status = 'active' and deleted = false
+        order by id desc
+        limit 1`, {
+            type : QueryTypes.SELECT
+        }
+    )
+    if(song.length) {
         res.json({
             code : 200,
-            song : song,
+            song : song[0],
         })
     } else {
         // nếu k có previous-audio thì trả về audio cuối cùng trong database
-        const idLastAudio = await sequelize.query(`
-            SELECT MAX(id) as id, audio
-            FROM song;`, {
-            type: QueryTypes.SELECT,
-        });
-        const lastSong = await Song.findOne({  
-            where : {
-                id : idLastAudio[0]['id']
-            },
-            raw : true
-        })
+        const lastSong = await sequelize.query(
+            `
+            select id, audio from songs
+            where status = 'active' and deleted = false
+            order by id desc
+            limit 1`, {
+                type : QueryTypes.SELECT
+            }
+        )
         res.json({
             code : 200,
-            song : lastSong
+            song : lastSong[0]
         })
     }
 }
@@ -124,7 +133,9 @@ export const nextAudio = async (req: Request, res: Response) => {
         const songId = `${req.query.songId}`;
         const preSong = await Song.findOne({
             where : {
-                id : songId
+                id : songId,
+                status : 'active',
+                deleted : false,
             },
             raw : true
         })
@@ -141,21 +152,16 @@ export const nextAudio = async (req: Request, res: Response) => {
             return;
         }
     }
-    const audioCurrentId = `${req.query.audioCurrentId}`;
-    const idNextAudio = await sequelize.query(
-        `SELECT MIN(id) as id, audio
-        FROM song
-        WHERE id > ${audioCurrentId};`,
-        {
-            raw : true,
-            type: QueryTypes.SELECT,
-        }
-    );
-    const song = await Song.findOne({ // next-audio
+    const audioCurrentId = `${req.query.audioCurrentId}`;  // audio đang phát 
+    const song = await Song.findOne({
         where : {
-            id : idNextAudio[0]['id']
+            id : {
+                [Op.gt] : audioCurrentId
+            },
+            status : 'active',
+            deleted : false,
         },
-        raw : true,
+        raw : true
     })
     if(song) {
         res.json({
@@ -163,16 +169,10 @@ export const nextAudio = async (req: Request, res: Response) => {
             song : song
         })
     } else {
-        const idLastAudio = await sequelize.query( // nếu không có bài nào nữa thì trả về audio đầu tiên trong database
-            `SELECT MIN(id) as id, audio
-            FROM song;
-            `, {
-                type : QueryTypes.SELECT
-            }
-        );
-        const lastSong = await Song.findOne({
+        const lastSong = await Song.findOne({ // nếu không có bài nào nữa thì trả về audio đầu tiên trong database
             where : {
-                id : idLastAudio[0]['id']
+                status : "active",
+                deleted : false,
             }
         })
         if(lastSong) {

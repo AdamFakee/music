@@ -104,6 +104,16 @@ const formatTime = (time) => {
 
 
 
+let songInStack = []; // lưu những audio đã nghe theo kiểu stack
+const songInStackInLocalStorage = localStorage.getItem('songInStack');
+if(songInStackInLocalStorage) {
+  // songInQueue = [];
+  const arrSongId = songInStackInLocalStorage.split(',');
+  arrSongId.forEach(item => {
+    songInQueue.push(item);
+  })
+}
+// add-to-queue
 
 // audio-in-main : assign src to audio
 const audioInMain = document.querySelector('[audio-in-main]');
@@ -115,6 +125,8 @@ if(audioInMain) {
   }, 1000);   // nguyên lý của duration là load hết file thì mới dùng đc, nên file dài quá là cút 
   audio.src = audioInMain.src; // gán link audio mới
   const audioId = audioInMain.getAttribute('audio-in-main');
+  songInStack.push(audioId); // lưu bài hát đã truy cập đến hoặc đã nghe đến vào stack
+  localStorage.setItem('songInStack', songInStack);
   audio.setAttribute('audio-id', audioId); // set id hiện tại cho audio
 }
 // End audio-in-main
@@ -173,6 +185,7 @@ if(randomSong) {
           if(data.code == 200 && audio) {
             audio.src = data.song.audio;
             audio.setAttribute('audio-id', data.song.id);
+            audioHeardInStack.push(data.song.id); // lưu bài đã nghe vào stack
             setTimeout(() => {
               const timeEnd = document.querySelector('[time-end]');
               const durationTime = Math.round(audio.duration);
@@ -191,16 +204,16 @@ if(randomSong) {
 const previousAudio = document.querySelector('[previous-audio]');
 if(previousAudio && audio) {
   previousAudio.addEventListener('click', () => {
-    if(songInQueue.length) {
-      const songId = songInQueue.shift();
+    if(songInStack.length) {
+      const songId = songInStack.pop();
+      localStorage.setItem('songInStack', songInStack);
       // localStorage.setItem('songInQueue', songInQueue); nghe xong muốn nghe lại bài trước đó trong hàng đợi : chưa xử lí 
-      fetch(`/song/previous-audio/queue?songId=${songId}`)
+      fetch(`/song/previous-audio/stack?songId=${songId}`)
         .then (res => res.json())
         .then (data => {
           if(data.code == 200) {
-            console.log(data)
             audio.src = data.song.audio;
-            console.log(data.song.id)
+            console.log(data.song.id);
             audio.setAttribute('audio-id', data.song.id);
             setTimeout(() => {
               const timeEnd = document.querySelector('[time-end]');
@@ -220,6 +233,8 @@ if(previousAudio && audio) {
             audio.src = data.song.audio;
             console.log(data.song.id)
             audio.setAttribute('audio-id', data.song.id);
+            songInStack.push(data.song.id); // cái trên là truy vấn ở chỗ stack nên k lưu vô, còn cái này truy vấn từ database
+            localStorage.setItem('songInStack', songInStack);
             setTimeout(() => {
               const timeEnd = document.querySelector('[time-end]');
               const durationTime = Math.round(audio.duration);
@@ -246,6 +261,8 @@ if(nextAudio && audio) {
         .then (data => {
           if(data.code == 200) {
             audio.src = data.song.audio;
+            songInStack.push(data.song.id); // lưu vô stack
+            localStorage.setItem('songInStack', songInStack);
             audio.setAttribute('audio-id', data.song.id);
             setTimeout(() => {
               const timeEnd = document.querySelector('[time-end]');
@@ -264,6 +281,8 @@ if(nextAudio && audio) {
           if(data.code == 200) {
             audio.src = data.song.audio;
             console.log(data.song.id)
+            songInStack.push(data.song.id); // lưu vô stack
+            localStorage.setItem('songInStack', songInStack);
             audio.setAttribute('audio-id', data.song.id);
             setTimeout(() => {
               const timeEnd = document.querySelector('[time-end]');
@@ -369,6 +388,8 @@ setInterval(() => {  // 0.5s check xem audio chạy hết chưa
         .then (data => {
           if(data.code == 200) {
             audio.src = data.song.audio;
+            songInStack.push(data.song.id); // lưu vô stack
+            localStorage.setItem('songInStack', songInStack);
             audio.setAttribute('audio-id', data.song.id);
             setTimeout(() => {
               const timeEnd = document.querySelector('[time-end]');
@@ -387,6 +408,8 @@ setInterval(() => {  // 0.5s check xem audio chạy hết chưa
           if(data.code == 200) {
             audio.src = data.song.audio;
             console.log(data.song.id)
+            songInStack.push(data.song.id); // lưu vô stack
+            localStorage.setItem('songInStack', songInStack);
             audio.setAttribute('audio-id', data.song.id);
             setTimeout(() => {
               const timeEnd = document.querySelector('[time-end]');

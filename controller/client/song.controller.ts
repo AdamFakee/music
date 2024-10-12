@@ -3,7 +3,6 @@ import sequelize from '../../config/database';
 import {Op,QueryTypes} from 'sequelize';
 import {Song} from '../../model/song.model';
 import { jsonParseHelper, jsonParseHelperNotInLoop } from "../../helper/jsonParse.helper";
-import exp from "constants";
 
 
 // [GET] /song/detail/:slug
@@ -83,7 +82,7 @@ export const queueDetail = async (req: Request, res: Response) => {
 export const previousAudio = async (req: Request, res: Response) => {
     const type = req.params.type; 
     // check router
-    if(type != 'nomal' && type !='queue') {
+    if(type != 'nomal' && type !='stack') {
         res.json({
             code : 400
         });
@@ -91,7 +90,7 @@ export const previousAudio = async (req: Request, res: Response) => {
     }
     // End check router
 
-    if(type == 'queue') {  // check router cụ thể
+    if(type == 'stack') {  // check router cụ thể
         const songId = `${req.query.songId}`; // id bài trong hàng đợi
         const preSong = await Song.findOne({
             where : {

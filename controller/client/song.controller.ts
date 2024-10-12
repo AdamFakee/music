@@ -3,6 +3,7 @@ import sequelize from '../../config/database';
 import {Op,QueryTypes} from 'sequelize';
 import {Song} from '../../model/song.model';
 import { jsonParseHelper, jsonParseHelperNotInLoop } from "../../helper/jsonParse.helper";
+import exp from "constants";
 
 
 // [GET] /song/detail/:slug
@@ -50,6 +51,32 @@ export const random = async (req: Request, res: Response) => {
         code : 200,
         song : song
     });
+}
+
+// [GET] /queue/detail
+export const queueDetail = async (req: Request, res: Response) => {
+    const songInQueue = req.body.songInQueue;
+    const songs = await Song.findAll({
+        where : {
+            id : {
+                [Op.in] : songInQueue
+            },
+            status : 'active',
+            deleted : false,
+        },
+        raw : true
+    })
+    jsonParseHelper(songs);
+    if(songs.length) {
+        res.json({
+            code : 200,
+            songs : songs
+        })
+    } else {
+        res.json({
+            code : 400
+        })
+    }
 }
 
 // [GET] /song/previous-audio/:type

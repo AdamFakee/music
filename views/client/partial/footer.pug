@@ -1,7 +1,7 @@
 footer.footer 
     .container 
         .inner-wrap 
-            .inner-desc 
+            div(class='inner-desc' information-song)
                 img(src="/client/img/avatar.jpg", alt="")
                 .inner-content 
                     .inner-name Hà Nội
@@ -18,15 +18,12 @@ footer.footer
                     button <i class="fa-solid fa-forward-step" next-audio></i>
                     button <i class="fa-solid fa-rotate" loop-audio></i>
                 .inner-audio 
-                    audio(src="https://backend.daca.vn/assets/audios/cat-doi-noi-sau.mp3" audio id='audio')
+                    audio(audio id='audio')
                     div(class='inner-progress-bar' progress-bar) 
                         div(class='inner-time-start' time-start) 0:00
                         div(class='inner-bar' time-line) 
                             div(class='inner-fill' time-filled) 
-                        div(class='inner-time-end' time-end)  5:00
+                        div(class='inner-time-end' time-end)  00:00
             .inner-feature 
                 button(class='inner-lyric' button-queue) <i class="fa-solid fa-bars-staggered"></i>
                 div(class='inner-queue' queue)
-                    a(href="#" class='inner-item') home 
-                    a(href="#" class='inner-item') home 
-                    a(href="#" class='inner-item') home 

@@ -49,8 +49,16 @@ if(formSearch) {
 // end sugguest search
 
 
-// add-to-queue
 let songInQueue = []; // hàng đợi ưu tiên chứa các bài hát được chọn : FIFO
+const songInQueueInLocalStorage = localStorage.getItem('songInQueue');
+if(songInQueueInLocalStorage) {
+  // songInQueue = [];
+  const arrSongId = songInQueueInLocalStorage.split(',');
+  arrSongId.forEach(item => {
+    songInQueue.push(item);
+  })
+}
+// add-to-queue
 const addToQueue = document.querySelectorAll('[add-to-queue]');
 if(addToQueue.length) {
   addToQueue.forEach(song => {
@@ -67,14 +75,17 @@ if(addToQueue.length) {
       } else {
         songInQueue.push(songId);
       }
+
+      // lưu cái hàng đợi vô local storage tránh khi load trang bị mất dữ liệu
+      localStorage.setItem('songInQueue', songInQueue);
     })
   })
 }
 // End add-to-queue
 
 // audio
-const audio = document.querySelector('[audio]');
-const progressBar = document.querySelector('[progress-bar]');
+const audio = document.querySelector('[audio]'); // ở thanh footer
+const progressBar = document.querySelector('[progress-bar]'); // ở thanh footer 
 
 // format-time-function : chỉ format thời gian dưới 1 giờ đồng hồ
 const formatTime = (time) => {
@@ -90,6 +101,9 @@ const formatTime = (time) => {
   return timeFormated;
 }
 // End format-time-function
+
+
+
 
 // audio-in-main : assign src to audio
 const audioInMain = document.querySelector('[audio-in-main]');
@@ -147,7 +161,7 @@ if(randomSong) {
     if(audio) {
       const audioCurrentId = audio.getAttribute('audio-id');
       fetch(`/song/random`, {
-        method : "POST",   // mới làm lần đầu nên làm phương thức POST, phía dưới gán query đơn giản hơn
+        method : "POST",   // mới làm lần đầu nên làm phương thức POST, phía dưới gán query đơn giản hơn - này là non 
         headers: {
           "Content-Type": "application/json",
         },
@@ -179,6 +193,7 @@ if(previousAudio && audio) {
   previousAudio.addEventListener('click', () => {
     if(songInQueue.length) {
       const songId = songInQueue.shift();
+      // localStorage.setItem('songInQueue', songInQueue); nghe xong muốn nghe lại bài trước đó trong hàng đợi : chưa xử lí 
       fetch(`/song/previous-audio/queue?songId=${songId}`)
         .then (res => res.json())
         .then (data => {
@@ -225,7 +240,7 @@ if(nextAudio && audio) {
   nextAudio.addEventListener('click', () => {
     if(songInQueue.length) {
       const songId = songInQueue.shift();
-      const audioCurrentId = audio.getAttribute('audio-id'); // id của audio hiện tại
+      localStorage.setItem('songInQueue', songInQueue);
       fetch(`/song/next-audio/queue?songId=${songId}`)
         .then (res => res.json())
         .then (data => {
@@ -262,7 +277,7 @@ if(nextAudio && audio) {
     }
   })
 }
-// End previous-audio
+// End next-audio
 
 
 // loop-audio : nghe lặp lại
@@ -295,13 +310,94 @@ if(timeLine && audio) {
 // button-queue : show queue
 const buttonQueue = document.querySelector('[button-queue]');
 if(buttonQueue) {
+  const queue = document.querySelector('[queue]');
+  let exitShow = queue.classList.contains('show'); // check xem đã tồn tại class show hay chưa
+  console.log(exitShow)
   buttonQueue.addEventListener('click', () => {
-    const queue = document.querySelector('[queue]');
-    if(queue) {
-      queue.classList.toggle('show');
+    if(songInQueue.length) {  // check hàng đợi rỗng
+      if(!exitShow) {   // chưa tồn tại class 'show' => đc call api
+        fetch('/song/queue/detail', {
+          method : 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ songInQueue : songInQueue }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            const songs = data.songs;
+            const songSorted = []; // sắp xếp lại theo thứ tự trong songInQueue
+            for(let i of songInQueue) {
+              for(let y of songs) {
+                if(i == y.id) {
+                  songSorted.push(y);
+                  break;
+                }
+              }
+            }
+            const htmlSongs = songSorted.map(item => `<a class="inner-item" href="/song/detail/${item.slug}"> ${item.name} </a>`); // chưa 1 mảng các thẻ html
+            queue.innerHTML = htmlSongs.join('')
+          })
+      }
+    } else {
+      queue.innerText = 'hàng đợi rỗng';
+    }
+    queue.classList.toggle('show');
+  })
+  
+  document.body.addEventListener('click', (event) => {
+    exitShow = queue.classList.contains('show');
+    const eventTarget = event.target; // nút được click
+    const i = buttonQueue.querySelector('i'); // thẻ i ở trong buttonQueue
+    if(exitShow && eventTarget != buttonQueue && eventTarget != i) {
+      queue.classList.remove('show');
     }
   })
 }
+
 // End button-queue
 
 
+// nghe xong chuyển bài mới : cho nó như next-audio luôn
+setInterval(() => {  // 0.5s check xem audio chạy hết chưa
+  if(nextAudio && audio && audio.ended) {
+    if(songInQueue.length) {
+      const songId = songInQueue.shift();
+      localStorage.setItem('songInQueue', songInQueue);
+      fetch(`/song/next-audio/queue?songId=${songId}`)
+        .then (res => res.json())
+        .then (data => {
+          if(data.code == 200) {
+            audio.src = data.song.audio;
+            audio.setAttribute('audio-id', data.song.id);
+            setTimeout(() => {
+              const timeEnd = document.querySelector('[time-end]');
+              const durationTime = Math.round(audio.duration);
+              timeEnd.innerHTML = formatTime(durationTime);
+            }, 500);
+            const timeFilled = progressBar.querySelector('[time-filled]'); 
+            timeFilled.style.width = '0%';  // set lại width cho thanh progressBar
+          }
+        })
+    } else {
+      const audioCurrentId = audio.getAttribute('audio-id'); // id của audio hiện tại
+      fetch(`/song/next-audio/nomal?audioCurrentId=${audioCurrentId}`)
+        .then (res => res.json())
+        .then (data => {
+          if(data.code == 200) {
+            audio.src = data.song.audio;
+            console.log(data.song.id)
+            audio.setAttribute('audio-id', data.song.id);
+            setTimeout(() => {
+              const timeEnd = document.querySelector('[time-end]');
+              const durationTime = Math.round(audio.duration);
+              timeEnd.innerHTML = formatTime(durationTime);
+            }, 500);
+            const timeFilled = progressBar.querySelector('[time-filled]'); 
+            timeFilled.style.width = '0%';  // set lại width cho thanh progressBar
+          }
+        })
+    }
+  }
+}, 500);
+// End nghe xong chuyển bài mới
